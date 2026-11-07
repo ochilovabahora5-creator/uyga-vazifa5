@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="uz" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>K-Drama World - Korea Dramalari Portali (O'zbek Tilida)</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        kdrama: {
+                            bg: '#0D0814',
+                            card: '#181024',
+                            border: '#2E1F45',
+                            pink: '#F43F5E',
+                            purple: '#A855F7',
+                            cyan: '#06B6D4'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* W3C Compliant Standard CSS with Vendor Prefixes */
+        body {
+            background-color: #0D0814;
+            color: #F3F4F6;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .glass-card {
+            background: rgba(24, 16, 36, 0.75);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .glass-nav {
+            background: rgba(13, 8, 20, 0.88);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        /* Gradient Text (Standard W3C + Vendor Syntax) */
+        .gradient-text {
+            background: linear-gradient(135deg, #F43F5E 0%, #A855F7 50%, #06B6D4 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0D0814;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2E1F45;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #F43F5E;
+        }
+
+        .drama-card-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .drama-card-hover:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 30px -10px rgba(244, 63, 94, 0.35);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-kdrama-pink selection:text-white">
+
+    <!-- Header Navigation -->
+    <header class="sticky top-0 z-50 glass-nav transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <!-- Logo -->
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('home')">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-kdrama-pink via-kdrama-purple to-kdrama-cyan flex items-center justify-center shadow-lg shadow-kdrama-pink/30">
+                        <i class="fa-solid fa-heart text-white text-lg"></i>
+                    </div>
+                    <span class="text-2xl font-black tracking-wider gradient-text">K-Drama World</span>
+                </div>
+
+                <!-- Desktop Nav Links -->
+                <nav class="hidden md:flex items-center space-x-8">
+                    <button onclick="switchTab('home')" class="nav-btn text-gray-300 hover:text-white font-medium transition-colors flex items-center gap-2">
+                        <i class="fa-solid fa-house text-sm"></i> Bosh sahifa
+                    </button>
+                    <button onclick="switchTab('top')" class="nav-btn text-gray-300 hover:text-white font-medium transition-colors flex items-center gap-2">
+                        <i class="fa-solid fa-fire text-sm"></i> Mashhur Dramalar
+                    </button>
+                    <button onclick="switchTab('watchlist')" class="nav-btn text-gray-300 hover:text-white font-medium transition-colors flex items-center gap-2 relative">
+                        <i class="fa-solid fa-bookmark text-sm"></i> Tanlanganlar
+                        <span id="watchlist-count" class="bg-kdrama-pink text-white text-xs px-2 py-0.5 rounded-full font-bold">0</span>
+                    </button>
+                </nav>
+
+                <!-- Search Input -->
+                <div class="relative w-72">
+                    <input type="text" id="search-input" onkeyup="handleSearch()" placeholder="Drama nomini yozing..." 
+                           class="w-full bg-kdrama-card/90 border border-kdrama-border text-sm text-gray-200 rounded-full py-2.5 pl-10 pr-4 focus:outline-none focus:border-kdrama-pink transition-all">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-gray-400 text-sm"></i>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full">
+
+        <!-- Hero Banner Section -->
+        <section id="hero-banner" class="relative rounded-3xl overflow-hidden mb-12 glass-card border border-kdrama-border/50">
+            <div class="relative h-[480px] w-full">
+                <img id="hero-img" src="https://images.unsplash.com/photo-1514565131-fce0801e5785?auto=format&fit=crop&w=1400&q=80" class="w-full h-full object-cover" alt="Mening Iblisim">
+                <div class="absolute inset-0 bg-gradient-to-t from-kdrama-bg via-kdrama-bg/60 to-transparent"></div>
+                <div class="absolute bottom-0 left-0 p-8 sm:p-12 max-w-2xl">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="bg-kdrama-pink/20 border border-kdrama-pink/50 text-kdrama-pink text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider">Premyera</span>
+                        <span class="bg-kdrama-purple/20 border border-kdrama-purple/50 text-kdrama-purple text-xs font-semibold px-3 py-1 rounded-full"><i class="fa-solid fa-microphone mr-1"></i> O'zbek Tilida</span>
+                    </div>
+                    <h1 id="hero-title" class="text-3xl sm:text-5xl font-extrabold text-white mb-4 leading-tight">Mening Iblisim (My Demon)</h1>
+                    <p id="hero-desc" class="text-gray-300 text-sm sm:text-base line-clamp-3 mb-6">Kuchini yo'qotgan iblis va sovuqqon merosxo'r qiz o'rtasidagi soxta nikoh hamda kutilmagan sevgi qissasi.</p>
+                    <div class="flex items-center gap-4">
+                        <button id="hero-play-btn" class="bg-gradient-to-r from-kdrama-pink to-kdrama-purple hover:opacity-90 text-white font-bold px-8 py-3.5 rounded-xl shadow-lg shadow-kdrama-pink/30 flex items-center gap-3 transition-all transform hover:scale-105">
+                            <i class="fa-solid fa-play"></i> Barcha qismlarni ko'rish
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Filters & Controls Header -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+            <div>
+                <h2 id="section-title" class="text-2xl font-bold text-white tracking-wide">Korea Dramalari Katalogi</h2>
+                <p class="text-gray-400 text-sm">Barcha qismlari o'zbek tilida sifatli formatda</p>
+            </div>
+            
+            <!-- Genre Filters -->
+            <div class="flex flex-wrap items-center gap-2">
+                <button onclick="filterGenre('all')" class="genre-btn active-genre px-4 py-2 rounded-xl text-xs font-semibold bg-kdrama-pink text-white transition-all">Barchasi</button>
+                <button onclick="filterGenre('Romantiya')" class="genre-btn px-4 py-2 rounded-xl text-xs font-semibold bg-kdrama-card border border-kdrama-border text-gray-300 hover:text-white hover:border-kdrama-pink transition-all">Romantiya</button>
+                <button onclick="filterGenre('Detektiv')" class="genre-btn px-4 py-2 rounded-xl text-xs font-semibold bg-kdrama-card border border-kdrama-border text-gray-300 hover:text-white hover:border-kdrama-pink transition-all">Detektiv</button>
+                <button onclick="filterGenre('Fantastika')" class="genre-btn px-4 py-2 rounded-xl text-xs font-semibold bg-kdrama-card border border-kdrama-border text-gray-300 hover:text-white hover:border-kdrama-pink transition-all">Fantastika</button>
+                <button onclick="filterGenre('Dramatik')" class="genre-btn px-4 py-2 rounded-xl text-xs font-semibold bg-kdrama-card border border-kdrama-border text-gray-300 hover:text-white hover:border-kdrama-pink transition-all">Dramatik</button>
+            </div>
+        </div>
+
+        <!-- Drama Cards Grid -->
+        <section id="drama-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Dynamic JavaScript Cards -->
+        </section>
+
+    </main>
+
+    <!-- Video Player & Episode Modal -->
+    <div id="player-modal" class="fixed inset-0 z-50 bg-black/92 backdrop-blur-md hidden flex items-center justify-center p-4 sm:p-6">
+        <div class="glass-card bg-kdrama-card border border-kdrama-border rounded-3xl max-w-5xl w-full max-h-[92vh] overflow-y-auto relative p-6">
+            
+            <!-- Close Modal -->
+            <button onclick="closePlayerModal()" class="absolute top-4 right-4 w-10 h-10 bg-kdrama-bg/80 border border-kdrama-border hover:bg-kdrama-pink rounded-full flex items-center justify-center text-white transition-all z-20">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <!-- Video Player -->
+            <div class="w-full aspect-video bg-black rounded-2xl overflow-hidden mb-6 relative border border-kdrama-border">
+                <video id="main-video" class="w-full h-full object-cover" controls poster="">
+                    <source id="video-source" src="" type="video/mp4">
+                    Brauzeringiz video ijrosini qo'llab-quvvatlamaydi.
+                </video>
+            </div>
+
+            <!-- Drama Info & Episode List -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Info Section -->
+                <div class="lg:col-span-2">
+                    <div class="flex flex-wrap items-center gap-3 mb-2">
+                        <span id="modal-genre" class="bg-kdrama-pink/20 border border-kdrama-pink/40 text-kdrama-pink text-xs px-2.5 py-1 rounded-md font-bold">Romantiya</span>
+                        <span id="modal-rating" class="text-yellow-400 text-sm font-bold flex items-center gap-1">
+                            <i class="fa-solid fa-star"></i> 9.8
+                        </span>
+                        <span id="modal-year" class="text-gray-400 text-sm">2024</span>
+                        <span class="bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 text-xs px-2.5 py-1 rounded-md font-bold"><i class="fa-solid fa-check-double mr-1"></i> O'zbekcha Tarjima</span>
+                    </div>
+                    <h2 id="modal-title" class="text-2xl font-extrabold text-white mb-3">Drama Nomi</h2>
+                    <p id="modal-desc" class="text-gray-300 text-sm leading-relaxed mb-4">Drama haqida ma'lumot.</p>
+                    
+                    <button id="modal-fav-btn" onclick="toggleWatchlistCurrent()" class="bg-kdrama-border hover:bg-kdrama-pink/20 border border-kdrama-border text-white text-xs font-semibold px-4 py-2.5 rounded-xl flex items-center gap-2 transition-all">
+                        <i class="fa-solid fa-bookmark"></i> Sevimlilarga Qo'shish
+                    </button>
+                </div>
+
+                <!-- Episodes Panel -->
+                <div class="glass-card p-4 rounded-2xl border border-kdrama-border/50">
+                    <h3 class="text-sm font-bold text-white mb-3 flex items-center justify-between">
+                        <span><i class="fa-solid fa-list-ul text-kdrama-cyan mr-2"></i> Barcha qismlar</span>
+                        <span id="episodes-count" class="text-xs text-gray-400">16 ta qism</span>
+                    </h3>
+                    <div id="episodes-list" class="space-y-2 max-h-52 overflow-y-auto pr-1">
+                        <!-- Dynamically populated episode list -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="border-t border-kdrama-border/40 py-8 bg-kdrama-bg">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <div class="flex items-center justify-center space-x-2 mb-4">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-kdrama-pink to-kdrama-purple flex items-center justify-center">
+                    <i class="fa-solid fa-heart text-white text-sm"></i>
+                </div>
+                <span class="text-xl font-bold gradient-text">K-Drama World</span>
+            </div>
+            <p class="text-gray-400 text-xs mb-2">Eng so'nggi Korea dramalari barcha qismlari bilan o'zbek tilida.</p>
+            <p class="text-gray-500 text-xs">&copy; 2026 K-Drama World. Barcha huquqlar saqlangan.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript Data and Core Engine -->
+    <script>
+        // Database of K-Dramas requested by the user
+        const dramaData = [
+            {
+                id: 1,
+                title: "Zolimning oshpazi (The Tyrant's Chef)",
+                genre: "Romantiya",
+                rating: 9.2,
+                year: 2024,
+                poster: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80",
+                banner: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1400&q=80",
+                description: "Zamonaviy mohir oshpaz qiz tasodifan o'tmishga tushib qoladi va saroyda shafqatsiz qirol uchun taom hozirlashga majbur bo'ladi.",
+                videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4",
+                episodesCount: 16
+            },
+            {
+                id: 2,
+                title: "Onamning dugonasining o'g'li (Love Next Door)",
+                genre: "Romantiya",
+                rating: 9.0,
+                year: 2024,
+                poster: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=600&q=80",
+                banner: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1400&q=80",
+                description: "Bolalikdan birga o'sgan va bir-birining barcha noqulay sirlarini biladigan ikki do'stning kutilmagan sevgi va hayotiy qissasi.",
+                videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4",
+                episodesCount: 16
+            },
+            {
+                id: 3,
+                title: "Qadrli X (Dear X)",
+                genre: "Dramatik",
+                rating: 8.9,
+                year: 2024,
+                poster: "https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=600&q=80",
+                banner: "https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=1400&q=80",
+                description: "Muvaffaqiyat cho'qqisiga erishish uchun boshqalardan foydalanadigan mashhur aktrisa va uni qutqarishga urinayotgan inson drama qissasi.",
+                videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+                episodesCount: 12
+            },
+            {
+                id: 4,
+                title: "Katta sichqon (Big Mouth)",
+                genre: "Detektiv",
+                rating: 9.3,
+                year: 2022,
+                poster: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=600&q=80",
+                banner: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=1400&q=80",
+                description: "Omadsiz advokat qotillik ishini surishtirayotib, tasodifan afsonaviy daho jinoyatchi 'Big Mouse' deb gumon qilinadi.",
+                videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+                episodesCount: 16
+            },
+            {
+                id: 5,
+                title: "9 dumli tulki (Tale of the Nine Tailed)",
+                genre: "Fantastika",
+                rating: 9.4,
+                year: 2020,
+                poster: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=600&q=80",
+                banner: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1400&q=80",
+                description: "Shahar orasida yashiringan afsonaviy to'qqiz dumli tulki (Gumiho) va g'ayritabiiy voqealarni tekshiruvchi prodyuser qiz sarguzashtlari.",
+                videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+                episodesCount: 16
+            },
+            {
+                id: 6,
+                title: "Mening iblisim (My Demon)",
+                genre: "Romantiya",
+                rating: 9.5,
+                year: 2023,
+                poster: "https://images.unsplash.com/photo-1514565131-fce0801e5785?auto=format&fit=crop&w=600&q=80",
+                banner: "https://images.unsplash.com/photo-1514565131-fce0801e5785?auto=format&fit=crop&w=1400&q=80",
+                description: "O'z kuchini vaqtincha yo'qotgan 200 yoshli iblis hamda yirik imperiya merosxo'ri bo'lgan sovuqqon qiz o'rtasidagi kelishuv nikohi.",
+                videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
+                episodesCount: 16
+            },
+            {
+                id: 7,
+                title: "Do'zaxdan kelgan sudya (The Judge from Hell)",
+                genre: "Fantastika",
+                rating: 9.1,
+                year: 2024,
+                poster: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=600&q=80",
+                banner: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=1400&q=80",
+                description: "Do'zaxdan inson tanasiga tushgan shafqatsiz iblis-sudya va adolatli detektiv birgalikda haqiqiy jinoyatchilarni jazolashadi.",
+                videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
+                episodesCount: 14
+            },
+            {
+                id: 8,
+                title: "Qayta turmush qurgan qirolicha (Remarried Empress)",
+                genre: "Dramatik",
+                rating: 9.0,
+                year: 2024,
+                poster: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80",
+                banner: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=1400&q=80",
+                description: "Taqdir zarbasidan so'ng taxtidan vos kechgan dono qirolicha qo'shni imperator bilan qayta turmush qurib, o'z qadr-qimmatini tiklaydi.",
+                videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoylines.mp4",
+                episodesCount: 16
+            },
+            {
+                id: 9,
+                title: "O'zganing qasosi (Revenge of Others)",
+                genre: "Detektiv",
+                rating: 8.8,
+                year: 2022,
+                poster: "https://images.unsplash.com/photo-1518105779142-d975f22f1b0a?auto=format&fit=crop&w=600&q=80",
+                banner: "https://images.unsplash.com/photo-1518105779142-d975f22f1b0a?auto=format&fit=crop&w=1400&q=80",
+                description: "Egizak akasining sirli o'limi sababini qidirayotgan o'quvchi qiz maktabdagi adolatsizliklarga qarshi kurashga kirishadi.",
+                videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4",
+                episodesCount: 12
+            }
+        ];
+
+        // Global State
+        let currentDramaList = [...dramaData];
+        let currentTab = 'home';
+        let currentSelectedDrama = null;
+        let watchlist = JSON.parse(localStorage.getItem('kdrama_watchlist')) || [];
+
+        // App Initialization
+        document.addEventListener('DOMContentLoaded', () => {
+            renderDramaCards(currentDramaList);
+            updateWatchlistCount();
+            setupHeroBanner();
+        });
+
+        // Setup Hero Banner
+        function setupHeroBanner() {
+            const heroBtn = document.getElementById('hero-play-btn');
+            heroBtn.onclick = () => openPlayerModal(6); // Default "Mening Iblisim"
+        }
+
+        // Render Drama Cards Grid
+        function renderDramaCards(list) {
+            const grid = document.getElementById('drama-grid');
+            grid.innerHTML = '';
+
+            if (list.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full text-center py-16 text-gray-400">
+                        <i class="fa-solid fa-heart-crack text-4xl mb-3 text-kdrama-border"></i>
+                        <p class="text-base">Siz qidirgan Korea dramasi topilmadi.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            list.forEach(drama => {
+                const isSaved = watchlist.includes(drama.id);
+                const card = document.createElement('div');
+                card.className = "glass-card rounded-2xl overflow-hidden border border-kdrama-border/60 drama-card-hover flex flex-col justify-between cursor-pointer group";
+                
+                card.innerHTML = `
+                    <div class="relative overflow-hidden aspect-[3/4]" onclick="openPlayerModal(${drama.id})">
+                        <img src="${drama.poster}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" alt="${drama.title}">
+                        <div class="absolute inset-0 bg-gradient-to-t from-kdrama-bg via-transparent to-transparent opacity-80"></div>
+                        <span class="absolute top-3 left-3 bg-kdrama-bg/85 backdrop-blur-md border border-kdrama-border text-xs px-2.5 py-1 rounded-md text-emerald-400 font-bold">
+                            <i class="fa-solid fa-microphone mr-1"></i> O'zbekcha
+                        </span>
+                        <button onclick="event.stopPropagation(); toggleWatchlist(${drama.id})" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-kdrama-bg/85 border border-kdrama-border flex items-center justify-center text-xs hover:bg-kdrama-pink transition-all ${isSaved ? 'text-kdrama-pink bg-kdrama-pink/20' : 'text-gray-300'}">
+                            <i class="fa-solid fa-bookmark"></i>
+                        </button>
+                    </div>
+                    <div class="p-4 flex-grow flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between text-xs text-gray-400 mb-1">
+                                <span class="text-kdrama-cyan font-semibold">${drama.genre}</span>
+                                <span class="text-yellow-400 font-bold"><i class="fa-solid fa-star mr-1"></i>${drama.rating}</span>
+                            </div>
+                            <h3 onclick="openPlayerModal(${drama.id})" class="text-base font-bold text-white hover:text-kdrama-pink transition-colors line-clamp-1 mb-1">${drama.title}</h3>
+                            <p class="text-gray-400 text-xs line-clamp-2">${drama.description}</p>
+                        </div>
+                        <button onclick="openPlayerModal(${drama.id})" class="mt-4 w-full py-2.5 rounded-xl bg-kdrama-border/50 hover:bg-kdrama-pink text-xs font-semibold text-white transition-colors flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-play"></i> Qismlarni Ko'rish (${drama.episodesCount} ta)
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Navigation Tabs
+        function switchTab(tab) {
+            currentTab = tab;
+            const heroBanner = document.getElementById('hero-banner');
+            const sectionTitle = document.getElementById('section-title');
+
+            if (tab === 'home') {
+                heroBanner.classList.remove('hidden');
+                sectionTitle.innerText = "Korea Dramalari Katalogi";
+                currentDramaList = [...dramaData];
+            } else if (tab === 'top') {
+                heroBanner.classList.add('hidden');
+                sectionTitle.innerText = "Eng Yuqori Reytingli Dramalar";
+                currentDramaList = [...dramaData].sort((a, b) => b.rating - a.rating);
+            } else if (tab === 'watchlist') {
+                heroBanner.classList.add('hidden');
+                sectionTitle.innerText = "Siz Tanlagan Dramalar";
+                currentDramaList = dramaData.filter(item => watchlist.includes(item.id));
+            }
+
+            renderDramaCards(currentDramaList);
+        }
+
+        // Genre Filter
+        function filterGenre(genre) {
+            document.querySelectorAll('.genre-btn').forEach(btn => {
+                btn.classList.remove('bg-kdrama-pink', 'text-white');
+                btn.classList.add('bg-kdrama-card', 'text-gray-300');
+            });
+            event.target.classList.remove('bg-kdrama-card', 'text-gray-300');
+            event.target.classList.add('bg-kdrama-pink', 'text-white');
+
+            if (genre === 'all') {
+                renderDramaCards(currentDramaList);
+            } else {
+                const filtered = currentDramaList.filter(item => item.genre === genre);
+                renderDramaCards(filtered);
+            }
+        }
+
+        // Search Input Engine
+        function handleSearch() {
+            const query = document.getElementById('search-input').value.toLowerCase();
+            const filtered = currentDramaList.filter(drama => 
+                drama.title.toLowerCase().includes(query) || 
+                drama.genre.toLowerCase().includes(query) ||
+                drama.description.toLowerCase().includes(query)
+            );
+            renderDramaCards(filtered);
+        }
+
+        // Open Modal Player
+        function openPlayerModal(dramaId) {
+            const drama = dramaData.find(d => d.id === dramaId);
+            if (!drama) return;
+
+            currentSelectedDrama = drama;
+            const modal = document.getElementById('player-modal');
+            const video = document.getElementById('main-video');
+            const videoSource = document.getElementById('video-source');
+            
+            document.getElementById('modal-title').innerText = drama.title;
+            document.getElementById('modal-desc').innerText = drama.description;
+            document.getElementById('modal-rating').innerHTML = `<i class="fa-solid fa-star"></i> ${drama.rating}`;
+            document.getElementById('modal-year').innerText = drama.year;
+            document.getElementById('modal-genre').innerText = drama.genre;
+
+            // Load Video Source
+            videoSource.src = drama.videoUrl;
+            video.load();
+
+            // Render Episodes List
+            const episodesContainer = document.getElementById('episodes-list');
+            document.getElementById('episodes-count').innerText = `${drama.episodesCount} ta qism (O'zbekcha)`;
+            episodesContainer.innerHTML = '';
+
+            for (let i = 1; i <= drama.episodesCount; i++) {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left p-2.5 rounded-xl text-xs font-semibold bg-kdrama-bg hover:bg-kdrama-pink/30 border border-kdrama-border text-gray-200 transition-all flex items-center justify-between";
+                btn.innerHTML = `
+                    <span><i class="fa-solid fa-circle-play text-kdrama-pink mr-2"></i> ${i}-Qism (O'zbek Tilida)</span>
+                    <span class="text-emerald-400 text-[10px] font-bold uppercase"><i class="fa-solid fa-check mr-1"></i> Tayyor</span>
+                `;
+                btn.onclick = () => {
+                    video.play();
+                };
+                episodesContainer.appendChild(btn);
+            }
+
+            updateWatchlistBtnState();
+            modal.classList.remove('hidden');
+        }
+
+        // Close Modal Player
+        function closePlayerModal() {
+            const modal = document.getElementById('player-modal');
+            const video = document.getElementById('main-video');
+            video.pause();
+            modal.classList.add('hidden');
+        }
+
+        // Watchlist Functions
+        function toggleWatchlist(dramaId) {
+            const index = watchlist.indexOf(dramaId);
+            if (index > -1) {
+                watchlist.splice(index, 1);
+            } else {
+                watchlist.push(dramaId);
+            }
+            localStorage.setItem('kdrama_watchlist', JSON.stringify(watchlist));
+            updateWatchlistCount();
+            renderDramaCards(currentDramaList);
+        }
+
+        function toggleWatchlistCurrent() {
+            if (currentSelectedDrama) {
+                toggleWatchlist(currentSelectedDrama.id);
+                updateWatchlistBtnState();
+            }
+        }
+
+        function updateWatchlistBtnState() {
+            const btn = document.getElementById('modal-fav-btn');
+            if (currentSelectedDrama && watchlist.includes(currentSelectedDrama.id)) {
+                btn.classList.add('bg-kdrama-pink/30', 'border-kdrama-pink');
+                btn.innerHTML = `<i class="fa-solid fa-check text-kdrama-pink"></i> Tanlanganlarga Qo'shildi`;
+            } else {
+                btn.classList.remove('bg-kdrama-pink/30', 'border-kdrama-pink');
+                btn.innerHTML = `<i class="fa-solid fa-bookmark"></i> Tanlanganlarga Qo'shish`;
+            }
+        }
+
+        function updateWatchlistCount() {
+            document.getElementById('watchlist-count').innerText = watchlist.length;
+        }
+    </script>
+</body>
+</html>
